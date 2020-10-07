@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.ytc.mapper.AdressMapper" >
+  <resultMap id="BaseResultMap" type="com.ytc.model.Adress" >
+    <id column="adressid" property="adressid" jdbcType="INTEGER" />
+    <result column="adressname" property="adressname" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    adressid, adressname
+  </sql>
+
+  <select id="queryAdressList" resultMap="BaseResultMap" >
+    select
+    <include refid="Base_Column_List" />
+    from t_movie_adress
+  </select>
+  <!--
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from t_movie_adress
+    where adressid = #{adressid,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from t_movie_adress
+    where adressid = #{adressid,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.ytc.model.Adress" >
+    insert into t_movie_adress (adressid, adressname)
+    values (#{adressid,jdbcType=INTEGER}, #{adressname,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.ytc.model.Adress" >
+    insert into t_movie_adress
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="adressid != null" >
+        adressid,
+      </if>
+      <if test="adressname != null" >
+        adressname,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="adressid != null" >
+        #{adressid,jdbcType=INTEGER},
+      </if>
+      <if test="adressname != null" >
+        #{adressname,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.ytc.model.Adress" >
+    update t_movie_adress
+    <set >
+      <if test="adressname != null" >
+        adressname = #{adressname,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where adressid = #{adressid,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.ytc.model.Adress" >
+    update t_movie_adress
+    set adressname = #{adressname,jdbcType=VARCHAR}
+    where adressid = #{adressid,jdbcType=INTEGER}
+  </update>
+  -->
+</mapper>

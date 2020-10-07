@@ -1,0 +1,272 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.ytc.mapper.MovieMapper" >
+  <resultMap id="BaseResultMap" type="com.ytc.model.Movie" >
+    <id column="movieid" property="movieid" jdbcType="INTEGER" />
+    <result column="moviename" property="moviename" jdbcType="VARCHAR" />
+    <result column="movieshow" property="movieshow" jdbcType="VARCHAR" />
+    <result column="moviescore" property="moviescore" jdbcType="VARCHAR" />
+    <result column="movietime" property="movietime" jdbcType="DATE" />
+    <association property="movieType" javaType="com.ytc.model.MovieType">
+      <id column="typeid" property="typeid" jdbcType="INTEGER" />
+      <result column="typename" property="typename" jdbcType="VARCHAR" />
+    </association>
+    <association property="adress" javaType="com.ytc.model.Adress">
+      <id column="adressid" property="adressid" jdbcType="INTEGER" />
+      <result column="adressname" property="adressname" jdbcType="VARCHAR" />
+    </association>
+    <association property="movieYear" javaType="com.ytc.model.MovieYear">
+      <id column="yearid" property="yearid" jdbcType="INTEGER" />
+      <result column="yearname" property="yearname" jdbcType="VARCHAR" />
+    </association>
+    <association property="movieFile" javaType="com.ytc.model.MovieFile">
+      <id column="fileid" property="fileid" jdbcType="INTEGER" />
+      <result column="filepath" property="filepath" jdbcType="VARCHAR" />
+    </association>
+  </resultMap>
+  <sql id="Base_Column_List" >
+    movieid, moviename, movieshow, movietype, movieadress, movieyear, moviescore, moviefile, 
+    movietime
+  </sql>
+
+  <sql id="whereSql">
+     <if test="dto.typeid!=null">
+      and tm.movietype=#{dto.typeid}
+     </if>
+    <if test="dto.adressid!=null">
+      and tm.movieadress=#{dto.adressid}
+    </if>
+    <if test="dto.yearid!=null">
+      and tm.movieyear=#{dto.yearid}
+    </if>
+    <if test="dto.moviename!=null and dto.moviename!=''">
+      and tm.moviename like '%${dto.moviename}%'
+    </if>
+    <if test="dto.startScore!=null and dto.startScore!=''">
+      and tm.moviescore &gt;=#{dto.startScore}
+    </if>
+    <if test="dto.endScore!=null and dto.endScore!=''">
+      and tm.moviescore &lt;=#{dto.endScore}
+    </if>
+    <if test="dto.startTime!=null and dto.startTime!=''">
+      and tm.movietime &gt;=#{dto.startTime}
+    </if>
+    <if test="dto.endTime!=null and dto.endTime!=''">
+      and tm.movietime &lt;=#{dto.endTime}
+    </if>
+  </sql>
+
+  <!-- 查询总条数-->
+  <select id="queryMovieCount" resultType="long" >
+    select count(1) from t_movie tm
+    where 1=1
+    <include refid="whereSql"/>
+  </select>
+   <!-- 查询电影-->
+  <select id="queryMovieList" resultMap="BaseResultMap" >
+    select * from t_movie tm
+    left join t_movie_adress  tma  on tm.movieadress=tma.adressid
+    left join t_movie_type  tmt  on tm.movietype=tmt.typeid
+    left join t_movie_year  tmy  on tm.movieyear=tmy.yearid
+    left join t_movie_file  tmf  on tm.moviefile=tmf.fileid
+    where 1=1
+    <include refid="whereSql"/>
+    limit #{start},#{pageSize}
+  </select>
+  <!-- 新增电影-->
+  <insert id="addMovie" parameterType="com.ytc.model.Movie" >
+    insert into t_movie ( moviename, movieshow,
+      movietype, movieadress, movieyear,
+      moviescore, moviefile, movietime
+      )
+    values ( #{m.moviename,jdbcType=VARCHAR}, #{m.movieshow,jdbcType=VARCHAR},
+      #{m.movieType.typeid,jdbcType=INTEGER}, #{m.adress.adressid,jdbcType=INTEGER}, #{m.movieYear.yearid,jdbcType=INTEGER},
+      #{m.moviescore,jdbcType=VARCHAR}, #{m.movieFile.fileid,jdbcType=INTEGER}, #{m.movietime,jdbcType=DATE}
+      )
+  </insert>
+
+  <!-- 修改1 将数据展示到页面-->
+  <select id="queryMovieById" resultMap="BaseResultMap" >
+    select * from t_movie tm
+    left join t_movie_adress  tma  on tm.movieadress=tma.adressid
+    left join t_movie_type  tmt  on tm.movietype=tmt.typeid
+    left join t_movie_year  tmy  on tm.movieyear=tmy.yearid
+    left join t_movie_file  tmf  on tm.moviefile=tmf.fileid
+    where 1=1  and tm.movieid=#{movieid}
+  </select>
+
+  <!-- 修改2 将修改的数据保存到数据库-->
+  <update id="updateMovie" parameterType="com.ytc.model.Movie" >
+    update t_movie
+    <set >
+      <if test="movie.moviename != null  " >
+        moviename = #{movie.moviename,jdbcType=VARCHAR},
+      </if>
+      <if test="movie.movieshow != null" >
+        movieshow = #{movie.movieshow,jdbcType=VARCHAR},
+      </if>
+      <if test="movie.movieType.typeid != null" >
+        movietype = #{movie.movieType.typeid,jdbcType=INTEGER},
+      </if>
+      <if test="movie.adress.adressid != null" >
+        movieadress = #{movie.adress.adressid,jdbcType=INTEGER},
+      </if>
+      <if test="movie.movieYear.yearid != null" >
+        movieyear = #{movie.movieYear.yearid,jdbcType=INTEGER},
+      </if>
+      <if test="movie.moviescore != null" >
+        moviescore = #{movie.moviescore,jdbcType=VARCHAR},
+      </if>
+      <if test="movie.movieFile.fileid != null" >
+        moviefile = #{movie.movieFile.fileid,jdbcType=INTEGER},
+      </if>
+      <if test="movie.movietime != null" >
+        movietime = #{movie.movietime,jdbcType=DATE},
+      </if>
+    </set>
+    where movieid = #{movie.movieid,jdbcType=INTEGER}
+  </update>
+
+
+
+  <!--删除电影-->
+  <delete id="deleteMovie" parameterType="java.lang.Integer" >
+    delete from t_movie
+    where movieid = #{movieid,jdbcType=INTEGER}
+  </delete>
+
+  <!--批量删除电影-->
+  <delete id="delsMovie" parameterType="java.util.List" >
+    delete from t_movie where movieid in
+    <foreach collection="list" item="item" index="index" open="(" separator="," close=")">
+      #{item}
+
+    </foreach>
+  </delete>
+
+  <!--
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from t_movie
+    where movieid = #{movieid,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from t_movie
+    where movieid = #{movieid,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.ytc.model.Movie" >
+    insert into t_movie (movieid, moviename, movieshow, 
+      movietype, movieadress, movieyear, 
+      moviescore, moviefile, movietime
+      )
+    values (#{movieid,jdbcType=INTEGER}, #{moviename,jdbcType=VARCHAR}, #{movieshow,jdbcType=VARCHAR}, 
+      #{movietype,jdbcType=INTEGER}, #{movieadress,jdbcType=INTEGER}, #{movieyear,jdbcType=INTEGER}, 
+      #{moviescore,jdbcType=VARCHAR}, #{moviefile,jdbcType=INTEGER}, #{movietime,jdbcType=DATE}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.ytc.model.Movie" >
+    insert into t_movie
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="movieid != null" >
+        movieid,
+      </if>
+      <if test="moviename != null" >
+        moviename,
+      </if>
+      <if test="movieshow != null" >
+        movieshow,
+      </if>
+      <if test="movietype != null" >
+        movietype,
+      </if>
+      <if test="movieadress != null" >
+        movieadress,
+      </if>
+      <if test="movieyear != null" >
+        movieyear,
+      </if>
+      <if test="moviescore != null" >
+        moviescore,
+      </if>
+      <if test="moviefile != null" >
+        moviefile,
+      </if>
+      <if test="movietime != null" >
+        movietime,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="movieid != null" >
+        #{movieid,jdbcType=INTEGER},
+      </if>
+      <if test="moviename != null" >
+        #{moviename,jdbcType=VARCHAR},
+      </if>
+      <if test="movieshow != null" >
+        #{movieshow,jdbcType=VARCHAR},
+      </if>
+      <if test="movietype != null" >
+        #{movietype,jdbcType=INTEGER},
+      </if>
+      <if test="movieadress != null" >
+        #{movieadress,jdbcType=INTEGER},
+      </if>
+      <if test="movieyear != null" >
+        #{movieyear,jdbcType=INTEGER},
+      </if>
+      <if test="moviescore != null" >
+        #{moviescore,jdbcType=VARCHAR},
+      </if>
+      <if test="moviefile != null" >
+        #{moviefile,jdbcType=INTEGER},
+      </if>
+      <if test="movietime != null" >
+        #{movietime,jdbcType=DATE},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.ytc.model.Movie" >
+    update t_movie
+    <set >
+      <if test="moviename != null" >
+        moviename = #{moviename,jdbcType=VARCHAR},
+      </if>
+      <if test="movieshow != null" >
+        movieshow = #{movieshow,jdbcType=VARCHAR},
+      </if>
+      <if test="movietype != null" >
+        movietype = #{movietype,jdbcType=INTEGER},
+      </if>
+      <if test="movieadress != null" >
+        movieadress = #{movieadress,jdbcType=INTEGER},
+      </if>
+      <if test="movieyear != null" >
+        movieyear = #{movieyear,jdbcType=INTEGER},
+      </if>
+      <if test="moviescore != null" >
+        moviescore = #{moviescore,jdbcType=VARCHAR},
+      </if>
+      <if test="moviefile != null" >
+        moviefile = #{moviefile,jdbcType=INTEGER},
+      </if>
+      <if test="movietime != null" >
+        movietime = #{movietime,jdbcType=DATE},
+      </if>
+    </set>
+    where movieid = #{movieid,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.ytc.model.Movie" >
+    update t_movie
+    set moviename = #{moviename,jdbcType=VARCHAR},
+      movieshow = #{movieshow,jdbcType=VARCHAR},
+      movietype = #{movietype,jdbcType=INTEGER},
+      movieadress = #{movieadress,jdbcType=INTEGER},
+      movieyear = #{movieyear,jdbcType=INTEGER},
+      moviescore = #{moviescore,jdbcType=VARCHAR},
+      moviefile = #{moviefile,jdbcType=INTEGER},
+      movietime = #{movietime,jdbcType=DATE}
+    where movieid = #{movieid,jdbcType=INTEGER}
+  </update>
+  -->
+</mapper>

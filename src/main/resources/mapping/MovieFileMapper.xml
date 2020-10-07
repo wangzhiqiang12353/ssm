@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.ytc.mapper.MovieFileMapper" >
+  <resultMap id="BaseResultMap" type="com.ytc.model.MovieFile" >
+    <id column="fileid" property="fileid" jdbcType="INTEGER" />
+    <result column="filepath" property="filepath" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    fileid, filepath
+  </sql>
+  <!-- 新增文件路径-->
+  <!--  <selectKey></selectKey> 返回最新插入的id-->
+  <insert id="addMovieFile" parameterType="com.ytc.model.MovieFile" >
+    insert into t_movie_file ( filepath)
+    values (#{filepath,jdbcType=VARCHAR})
+    <selectKey keyProperty="fileid" resultType="int">
+      select last_insert_id() as fileid
+    </selectKey>
+  </insert>
+
+  <!-- 修改文件路径-->
+  <update id="updateMovieFile" parameterType="com.ytc.model.MovieFile" >
+    update t_movie_file
+    <set >
+      <if test="filepath != null" >
+        filepath = #{filepath,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where fileid = #{fileid,jdbcType=INTEGER}
+  </update>
+
+  <!-- 删除图片路径-->
+  <delete id="deleteMovieFile" parameterType="java.lang.Integer" >
+    delete from t_movie_file
+    where fileid = #{fileid,jdbcType=INTEGER}
+  </delete>
+
+  <!--批量删除图片路径-->
+  <delete id="delsMovieFile" parameterType="java.util.List" >
+    delete from t_movie_file
+    where fileid  in
+    <foreach collection="list" item="item" index="index" open="(" separator="," close=")">
+      #{item}
+
+    </foreach>
+
+  </delete>
+
+  <!--
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from t_movie_file
+    where fileid = #{fileid,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from t_movie_file
+    where fileid = #{fileid,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.ytc.model.MovieFile" >
+    insert into t_movie_file (fileid, filepath)
+    values (#{fileid,jdbcType=INTEGER}, #{filepath,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.ytc.model.MovieFile" >
+    insert into t_movie_file
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="fileid != null" >
+        fileid,
+      </if>
+      <if test="filepath != null" >
+        filepath,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="fileid != null" >
+        #{fileid,jdbcType=INTEGER},
+      </if>
+      <if test="filepath != null" >
+        #{filepath,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.ytc.model.MovieFile" >
+    update t_movie_file
+    <set >
+      <if test="filepath != null" >
+        filepath = #{filepath,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where fileid = #{fileid,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.ytc.model.MovieFile" >
+    update t_movie_file
+    set filepath = #{filepath,jdbcType=VARCHAR}
+    where fileid = #{fileid,jdbcType=INTEGER}
+  </update>
+  -->
+</mapper>

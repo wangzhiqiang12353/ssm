@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.ytc.mapper.MovieYearMapper" >
+  <resultMap id="BaseResultMap" type="com.ytc.model.MovieYear" >
+    <id column="yearid" property="yearid" jdbcType="INTEGER" />
+    <result column="yearname" property="yearname" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    yearid, yearname
+  </sql>
+  <!-- 查询年代列表-->
+
+  <select id="queryYearList" resultMap="BaseResultMap" >
+    select
+    <include refid="Base_Column_List" />
+    from t_movie_year
+  </select>
+  <!--
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from t_movie_year
+    where yearid = #{yearid,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from t_movie_year
+    where yearid = #{yearid,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.ytc.model.MovieYear" >
+    insert into t_movie_year (yearid, yearname)
+    values (#{yearid,jdbcType=INTEGER}, #{yearname,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.ytc.model.MovieYear" >
+    insert into t_movie_year
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="yearid != null" >
+        yearid,
+      </if>
+      <if test="yearname != null" >
+        yearname,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="yearid != null" >
+        #{yearid,jdbcType=INTEGER},
+      </if>
+      <if test="yearname != null" >
+        #{yearname,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.ytc.model.MovieYear" >
+    update t_movie_year
+    <set >
+      <if test="yearname != null" >
+        yearname = #{yearname,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where yearid = #{yearid,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.ytc.model.MovieYear" >
+    update t_movie_year
+    set yearname = #{yearname,jdbcType=VARCHAR}
+    where yearid = #{yearid,jdbcType=INTEGER}
+  </update>
+  -->
+</mapper>

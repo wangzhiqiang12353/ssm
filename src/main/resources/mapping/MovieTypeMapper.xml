@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.ytc.mapper.MovieTypeMapper" >
+  <resultMap id="BaseResultMap" type="com.ytc.model.MovieType" >
+    <id column="typeid" property="typeid" jdbcType="INTEGER" />
+    <result column="typename" property="typename" jdbcType="VARCHAR" />
+    <collection property="movieList" ofType="com.ytc.model.Movie">
+      <id column="movieid" property="movieid" jdbcType="INTEGER" />
+      <result column="moviename" property="moviename" jdbcType="VARCHAR" />
+      <result column="movieshow" property="movieshow" jdbcType="VARCHAR" />
+      <result column="moviescore" property="moviescore" jdbcType="VARCHAR" />
+      <result column="movietime" property="movietime" jdbcType="DATE" />
+
+      <association property="adress" javaType="com.ytc.model.Adress">
+        <id column="adressid" property="adressid" jdbcType="INTEGER" />
+        <result column="adressname" property="adressname" jdbcType="VARCHAR" />
+      </association>
+      <association property="movieYear" javaType="com.ytc.model.MovieYear">
+        <id column="yearid" property="yearid" jdbcType="INTEGER" />
+        <result column="yearname" property="yearname" jdbcType="VARCHAR" />
+      </association>
+      <association property="movieFile" javaType="com.ytc.model.MovieFile">
+        <id column="fileid" property="fileid" jdbcType="INTEGER" />
+        <result column="filepath" property="filepath" jdbcType="VARCHAR" />
+      </association>
+    </collection>
+  </resultMap>
+  <sql id="Base_Column_List" >
+    typeid, typename
+  </sql>
+  <sql id="whereSql">
+    <if test="movieType.typename!=null and movieType.typename!=''">
+      and tmt.typename like '%${movieType.typename}%'
+    </if>
+  </sql>
+
+
+
+   <!--查询类型列表-->
+  <select id="queryTypeList" resultMap="BaseResultMap"  >
+    select
+    <include refid="Base_Column_List" />
+    from t_movie_type
+  </select>
+
+  <!-- 查询总条数-->
+  <select id="queryTypeCount" resultType="long"  >
+    select count(1) from t_movie_type tmt
+    where 1=1
+    <include refid="whereSql"/>
+  </select>
+
+
+  <select id="queryTypeLists" resultMap="BaseResultMap" >
+    select * from t_movie_type tmt
+    left join t_movie  tm  on  tm.movietype=tmt.typeid
+    left join t_movie_adress  tma  on  tm.movieadress=tma.adressid
+    left join t_movie_year  tmy  on  tm.movieyear=tmy.yearid
+    where 1=1
+    <include refid="whereSql"/>
+    limit #{start},#{pageSize}
+  </select>
+  <!--
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from t_movie_type
+    where typeid = #{typeid,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from t_movie_type
+    where typeid = #{typeid,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.ytc.model.MovieType" >
+    insert into t_movie_type (typeid, typename)
+    values (#{typeid,jdbcType=INTEGER}, #{typename,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.ytc.model.MovieType" >
+    insert into t_movie_type
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="typeid != null" >
+        typeid,
+      </if>
+      <if test="typename != null" >
+        typename,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="typeid != null" >
+        #{typeid,jdbcType=INTEGER},
+      </if>
+      <if test="typename != null" >
+        #{typename,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.ytc.model.MovieType" >
+    update t_movie_type
+    <set >
+      <if test="typename != null" >
+        typename = #{typename,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where typeid = #{typeid,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.ytc.model.MovieType" >
+    update t_movie_type
+    set typename = #{typename,jdbcType=VARCHAR}
+    where typeid = #{typeid,jdbcType=INTEGER}
+  </update>-->
+</mapper>
